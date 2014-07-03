@@ -14,7 +14,10 @@
 package io.selendroid.demo.nativeui;
 
 import io.selendroid.SelendroidCapabilities;
+import io.selendroid.SelendroidConfiguration;
 import io.selendroid.SelendroidDriver;
+import io.selendroid.SelendroidLauncher;
+
 
 import org.junit.After;
 import org.junit.Assert;
@@ -31,10 +34,19 @@ import org.openqa.selenium.WebElement;
  * @author ddary
  */
 public class UserRegistrationTest {
+  private static SelendroidLauncher selendroidServer = null;
   private WebDriver driver = null;
 
   @Before
   public void setup() throws Exception {
+    if (selendroidServer != null) {
+      selendroidServer.stopSelendroid();
+    }
+    SelendroidConfiguration config = new SelendroidConfiguration();
+    config.addSupportedApp("src/main/resources/selendroid-test-app-0.10.0.apk");
+    selendroidServer = new SelendroidLauncher(config);
+    selendroidServer.launchSelendroid();
+
     driver = new SelendroidDriver(new SelendroidCapabilities("io.selendroid.testapp:0.10.0"));
   }
 
@@ -82,6 +94,11 @@ public class UserRegistrationTest {
 
   @After
   public void teardown() {
-    driver.quit();
+    if (driver != null) {
+      driver.quit();
+    }
+    if (selendroidServer != null) {
+      selendroidServer.stopSelendroid();
+    }
   }
 }
